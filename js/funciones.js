@@ -37,6 +37,7 @@ $(function() {
         {
             celular.plataforma = device.platform;
             if ((celular.plataforma === "Android") || (celular.plataforma === "3.0.0.100")) {
+                app.mostrarModal(celular.plataforma,'Plataforma');
                 document.addEventListener("online", app.isOnline, false);
                 document.addEventListener("offline", app.isOffline, false);
             }
