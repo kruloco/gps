@@ -42,8 +42,8 @@ $(function() {
         {
             celular.conexion = app.getConexion();
             app.mostrarModal(celular.conexion, "Conexion");
-            if ((celular.conexion === 'Ninguna') || (celular.conexion === 'Desconocida')) {
-                celular.estado = false;
+            if ((celular.conexion !== 'Ninguna') && (celular.conexion !== 'Desconocida')) {
+                celular.estado = true;
             }
             celular.plataforma = device.platform;
             if ((celular.plataforma === "Android") || (celular.plataforma === "3.0.0.100")) {
