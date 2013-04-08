@@ -104,13 +104,20 @@ $(function() {
         };
 
         app.enviarPedido = function() {
-            console.log(latitud, longitud);
             var paquete = {lat: latitud, lng: longitud, id: idColectivo};
-            app.getJSONremoto(servidor + 'controladorColectivo.php', paquete,
-                    function(valor) {
-                        var fecha = new Date();
-                        $('#info').html(fecha.toLocaleString() + ' - ' + valor);
-                    });
+            var fecha = new Date();
+            $.ajax({
+                url: servidor + 'controladorColectivo.php',
+                data: paquete,
+                type: 'POST',
+                success: function(data) {
+                    $('#info').html(fecha.toLocaleString() + ' - ' + data);
+                },
+                error: function(data) {
+                    $('#info').html(fecha.toLocaleString() + ' - Error');
+                    console.debug(data);
+                }
+            });
         };
 
 ////Detecta la ubicación del usuario a través de W3C
@@ -152,22 +159,6 @@ $(function() {
             $("#lnkDialog").click();
             $("#dialogText").html(texto);
             $("#dialogTitle").html(titulo);
-        };
-
-//petición cross-domain
-        app.getJSONremoto = function(url, datos, callback) {
-            $.ajax({
-                url: url,
-                dataType: 'jsonp',
-                data: datos,
-                success: function(data) {
-                    callback(data);
-                },
-                error: function(data) {
-                    callback('Error');
-                    console.debug(data);
-                }
-            });
         };
 
         //Ejecuto función principal
