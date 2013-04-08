@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns = "http://www.w3.org/ns/widgets"
+        xmlns:gap = "http://phonegap.com/ns/1.0"
+        id = "com.phonegap.hello-world"
+        version = "2.2.0">
+    <name>GPSColectivos</name>
+
+    <description>
+        Genera la posición actual.
+    </description>
+
+    <author href="http://phonegap.com" email="manzurcarim@gmail.com">
+        Carim Manzur
+    </author>
+
+    <feature name="http://api.phonegap.com/1.0/device" />
+    <feature name="http://api.phonegap.com/1.0/geolocation"/>
+    <feature name="http://api.phonegap.com/1.0/network"/>
+    <feature name="http://api.phonegap.com/1.0/notification"/>
+
+    <preference name="phonegap-version" value="2.3.0" />
+    <preference name="orientation" value="portrait" />
+    <preference name="target-device" value="universal" />
+    <preference name="fullscreen" value="true" />
+
+    <icon src="icon.png" />
+    
+
+</widget>

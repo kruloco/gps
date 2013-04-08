@@ -3,7 +3,9 @@ $(function() {
 // Objeto para encapsular las funciones
     var Gps = {};
     var celular = {'estado': false, 'conexion': '', 'plataforma': ''};
-    var activarBucle = null, idColectivo = 1, servidor = "http://colectivo.site90.net/";
+    var activarBucle = null,
+            idColectivo = 1, latitud, longitud,
+            servidor = "http://colectivo.site90.net/";
 
     (function(app) {
 
@@ -75,13 +77,15 @@ $(function() {
 //Si hay conexión a internet, obtiene la posición actual y la envía al servidor remoto
 //Si no, muestra modal y elimina el timer
         app.activarGPS = function() {
-            var latitud, longitud;
             if (celular.estado)
             {
                 app.detectarUbicacion(function(lat, lng) {
-                    latitud = lat;
-                    longitud = lng;
-                    app.enviarPedido(latitud, longitud);
+                    if (lat !== latitud || lng !== longitud)
+                    {
+                        latitud = lat;
+                        longitud = lng;
+                        app.enviarPedido();
+                    }
                 });
             }
             else
@@ -92,9 +96,9 @@ $(function() {
             }
         };
 
-        app.enviarPedido = function(lat, lng) {
-            console.log(lat, lng);
-            var paquete = {lat: lat, lng: lng, id: idColectivo};
+        app.enviarPedido = function() {
+            console.log(latitud, longitud);
+            var paquete = {lat: latitud, lng: longitud, id: idColectivo};
             app.getJSONremoto(servidor + 'controladorColectivo.php', paquete,
                     function(valor) {
                         var fecha = new Date();
