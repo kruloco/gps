@@ -40,19 +40,20 @@ $(function() {
 //Manejador de eventos de PhoneGap
         app.bindingsPG = function()
         {
-            celular.plataforma = device.platform;
-            app.mostrarModal(celular.plataforma, 'Plataforma');
-            if ((celular.plataforma === "Android") || (celular.plataforma === "3.0.0.100")) {
-                document.addEventListener("online", app.isOnline, false);
-                document.addEventListener("offline", app.isOffline, false);
+            celular.conexion = app.getConexion();
+            app.mostrarModal(celular.conexion, "Conexion");
+            if ((celular.conexion === 'Ninguna') || (celular.conexion === 'Desconocida')) {
+                celular.estado = false;
             }
-        };
-
-        app.isOnline = function() {
-            celular.estado = true;
-        };
-        app.isOffline = function() {
-            celular.estado = false;
+            celular.plataforma = device.platform;
+            if ((celular.plataforma === "Android") || (celular.plataforma === "3.0.0.100")) {
+                document.addEventListener("online", function() {
+                    celular.estado = true;
+                }, false);
+                document.addEventListener("offline", function() {
+                    celular.estado = false;
+                }, false);
+            }
         };
 
         //Devuelve el tipo de conexion del dispositivo
