@@ -30,6 +30,11 @@ $(function() {
                 app.intercambiarBotones();
                 clearInterval(activarBucle);
             });
+
+            //Al tocar el botón SALIR
+            $("#btnSalir").on('click', function() {
+                app.cerrarAplicacion();
+            });
         };
 
 //Manejador de eventos de PhoneGap
