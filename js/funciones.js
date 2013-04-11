@@ -109,7 +109,7 @@ $(function() {
             $.ajax({
                 url: servidor + 'controladorColectivo.php',
                 data: paquete,
-                type: 'POST',
+                dataType: 'jsonp',
                 success: function(data) {
                     $('#info').html(fecha.toLocaleString() + ' - ' + data);
                 },
