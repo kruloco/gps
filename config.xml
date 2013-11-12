@@ -3,27 +3,20 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         id = "com.phonegap.gpsColectivos"
         version = "2.2.0">
-    <name>GPSColectivos</name>
-
-    <description>
-        Genera la posición actual.
-    </description>
-
-    <author href="http://phonegap.com" email="manzurcarim@gmail.com">
-        Carim Manzur
-    </author>
+    <name> GPSColectivos </name>
+    <description> Genera la posición actual. </description>
+    <author href="http://phonegap.com" email="manzurcarim@gmail.com"> Carim Manzur </author>
 
     <feature name="http://api.phonegap.com/1.0/device" />
     <feature name="http://api.phonegap.com/1.0/geolocation"/>
     <feature name="http://api.phonegap.com/1.0/network"/>
     <feature name="http://api.phonegap.com/1.0/notification"/>
 
-    <preference name="phonegap-version" value="2.3.0" />
+    <preference name="phonegap-version" value="3.0.0" />
     <preference name="orientation" value="portrait" />
     <preference name="target-device" value="universal" />
     <preference name="fullscreen" value="false" />
 
     <icon src="icon.png" />
-    
-
+    <access origin="*" />
 </widget>
