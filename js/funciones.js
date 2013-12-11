@@ -2,64 +2,64 @@ $(function() {
 
 // Objeto para encapsular las funciones
     var Gps = {};
-    var celular = {'estado': false, 'conexion': '', 'plataforma': ''};
-    var activarBucle = null,
-            idColectivo = 1, latitud, longitud,
-            servidor = "http://colectivo.site90.net/";
-
     (function(app) {
-
+        var celular = {'estado': false, 'conexion': '', 'plataforma': ''},
+        idColectivo = 1, latitud, longitud, servidor = "http://colectivo.site90.net/", watchID;
         // Función principal autoejecutable
         app.init = function() {
             document.addEventListener('deviceready', app.bindingsPG, false);
             app.bindings();
         };
-
         //Inicializa todos los EVENTOS de la página
         app.bindings = function() {
             //Al tocar el botón ACTIVAR
             $("#btnOn").on('click', function() {
                 app.intercambiarBotones();
-                activarBucle = setInterval(function() {
-                    app.activarGPS();
-                }, 10000);
+                app.activarGPS();
             });
-
             //Al tocar el botón DESACTIVAR
             $("#btnOff").on('click', function() {
                 app.intercambiarBotones();
-                clearInterval(activarBucle);
+                navigator.geolocation.clearWatch(watchID);
             });
-
             //Al tocar el botón SALIR
             $("#btnSalir").on('click', function() {
                 app.cerrarAplicacion();
             });
         };
-
 //Manejador de eventos de PhoneGap
         app.bindingsPG = function()
         {
             celular.conexion = app.getConexion();
-            app.mostrarModal(celular.conexion, "Conexion");
+            app.mostrarModal('Estás conectado mediante: ' + celular.conexion, "Conexion");
             if ((celular.conexion !== 'Ninguna') && (celular.conexion !== 'Desconocida')) {
                 celular.estado = true;
             }
             celular.plataforma = device.platform;
-            if ((celular.plataforma === "Android") || (celular.plataforma === "3.0.0.100")) {
-                document.addEventListener("online", function() {
-                    celular.estado = true;
-                }, false);
-                document.addEventListener("offline", function() {
-                    celular.estado = false;
-                }, false);
+            document.addEventListener("online", function() {
+                celular.estado = true;
+            }, false);
+            document.addEventListener("offline", function() {
+                celular.estado = false;
+            }, false);
+        };
+// CALLBACK SUCCESS DEL WATCH
+        app.onSuccess = function(position) {
+            var lat = position.coords.latitude, lng = position.coords.longitude;
+            if (lat !== latitud || lng !== longitud)
+            {
+                latitud = lat;
+                longitud = lng;
+                app.enviarPedido();
             }
         };
-
+// CALLBACK ERROR DEL WATCH
+        app.onError = function(error) {
+            app.mostrarModal('codigo: ' + error.code + '\n mensaje: ' + error.message, 'Error');
+        };
         //Devuelve el tipo de conexion del dispositivo
         app.getConexion = function() {
             var estadoRed = navigator.connection.type;
-
             var estados = {};
             estados[Connection.UNKNOWN] = 'Desconocida';
             estados[Connection.ETHERNET] = 'Ethernet';
@@ -68,90 +68,77 @@ $(function() {
             estados[Connection.CELL_3G] = '3G';
             estados[Connection.CELL_4G] = '4G';
             estados[Connection.NONE] = 'Ninguna';
-
             return estados[estadoRed];
         };
-
         app.cerrarAplicacion = function() {
             navigator.app.exitApp();
         };
-
         app.intercambiarBotones = function() {
             $("#btnOn").toggle();
             $("#btnOff").toggle();
         };
-
 //Si hay conexión a internet, obtiene la posición actual y la envía al servidor remoto
 //Si no, muestra modal y elimina el timer
         app.activarGPS = function() {
+
             if (celular.estado)
             {
-                app.detectarUbicacion(function(lat, lng) {
-                    if (lat !== latitud || lng !== longitud)
-                    {
-                        latitud = lat;
-                        longitud = lng;
-                        app.enviarPedido();
-                    }
-                });
+                // devuelve la posicion cada 1 minuto
+                watchID = navigator.geolocation.watchPosition(app.onSuccess, app.onError, {frequency: 60 * 1000});
             }
             else
             {
                 app.mostrarModal('No hay conexión a internet', 'Error');
-                clearInterval(activarBucle);
                 app.intercambiarBotones();
             }
         };
-
+//Envia un jsop a un servidor remoto con la lat, lng, idColectivo
         app.enviarPedido = function() {
             var paquete = {lat: latitud, lng: longitud, id: idColectivo};
-            var fecha = new Date();
             $.ajax({
                 url: servidor + 'controladorColectivo.php',
                 data: paquete,
                 dataType: 'jsonp',
                 success: function(data) {
-                    $('#info').html(fecha.toLocaleString() + ' - ' + data);
+                    $('#info').html(app.obtenerFecha() + '<br>Latitud: ' + latitud + '<br>Longitud: ' + longitud);
                 },
                 error: function(data) {
-                    $('#info').html(fecha.toLocaleString() + ' - Error');
+                    $('#info').html(app.obtenerFecha() + '<br>ERROR');
                     console.debug(data);
                 }
             });
         };
+        //Parseador de la fecha actual y hora
+        app.obtenerFecha = function() {
+            var nombres_dias = new Array('Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'),
+                    nombres_meses = new Array('Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'),
+                    fecha_actual = new Date(),
+                    dia_mes = fecha_actual.getDate(),
+                    dia_semana = fecha_actual.getDay(),
+                    mes = fecha_actual.getMonth() + 1,
+                    anio = fecha_actual.getFullYear(),
+                    fechaHora = new Date(),
+                    horas = fechaHora.getHours(),
+                    minutos = fechaHora.getMinutes(),
+                    segundos = fechaHora.getSeconds(),
+                    sufijo = 'AM';
 
-////Detecta la ubicación del usuario a través de W3C
-//Si la encuentra, la escribe en el campo ORIGEN
-//Si no la encuentra, escribe en el campo origen la Plaza independencia
-        app.detectarUbicacion = function(callback) {
-            var browserSupportFlag = new Boolean();
-            if (navigator.geolocation)
-            {
-                browserSupportFlag = true;
-                navigator.geolocation.getCurrentPosition(
-                        function(position) {
-                            callback(position.coords.latitude, position.coords.longitude);
-                        },
-                        function() {
-                            errorNoGeolocation(browserSupportFlag);
-                        },
-                        {enableHighAccuracy: true});
-            } else
-            {
-                browserSupportFlag = false;
-                errorNoGeolocation(browserSupportFlag);
+            if (horas > 12) {
+                horas = horas - 12;
+                sufijo = 'PM';
             }
 
-//Si no puede geolocalizar, escribe la plaza independencia
-            function errorNoGeolocation(browserSupportFlag) {
-                if (browserSupportFlag === true)
-                {
-                    app.mostrarModal("<p>Falló el servicio de Geolocalización.</p>\n\
-            <p>Activa los servicios de Ubicación en tu dispositivo o el GPS para mayor precisión.</p>");
-                } else {
-                    app.mostrarModal("Tu navegador no soporta Geolocalización.");
-                }
+            if (horas < 10) {
+                horas = '0' + horas;
             }
+            if (minutos < 10) {
+                minutos = '0' + minutos;
+            }
+            if (segundos < 10) {
+                segundos = '0' + segundos;
+            }
+
+            return nombres_dias[dia_semana] + ', ' + dia_mes + ' de ' + nombres_meses[mes - 1] + ' de ' + anio + '<br>' + horas + ':' + minutos + ':' + segundos;
         };
 
         //Recibe una cadena de teto y la muestra en un Modal de Error
@@ -160,9 +147,7 @@ $(function() {
             $("#dialogText").html(texto);
             $("#dialogTitle").html(titulo);
         };
-
         //Ejecuto función principal
         app.init();
-
     })(Gps);
 });

@@ -3,9 +3,10 @@
     <head> 
         <title>GPS</title> 
         <meta charset="utf-8"> 
-        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
         <link rel="stylesheet" href="css/jquery.mobile-1.3.2.min.css" />
-        <script src="cordova.js"></script>
+        <script type="text/javascript" src="cordova.js"></script>
         <script src="js/jquery-1.10.2.min.js"></script>
         <script src="js/jquery.mobile-1.3.2.min.js"></script>
         <script src="js/funciones.js"></script>
@@ -19,7 +20,7 @@
 
                 <a href="#" data-role="button" id="btnOn">Activar</a>
                 <a href="#" data-role="button" style="display:none" id="btnOff">Desactivar</a>
-                <p id="info"></p>
+                <p style="font-size: x-large" id="info"></p>
                 <a href="#" data-role="button" id="btnSalir">Salir</a>
                 <a id='lnkDialog' href="#dialog" data-rel="dialog" data-transition="pop" style='display:none;'></a>
             </div>
