@@ -83,8 +83,8 @@ $(function() {
 
             if (celular.estado)
             {
-                // devuelve la posicion cada 1 minuto
-                watchID = navigator.geolocation.watchPosition(app.onSuccess, app.onError, {frequency: 60 * 1000});
+                // devuelve la posicion cada 1 minuto.  enableHighAccuracy: true
+                watchID = navigator.geolocation.watchPosition(app.onSuccess, app.onError, {frequency: 60 * 1000}); 
             }
             else
             {
