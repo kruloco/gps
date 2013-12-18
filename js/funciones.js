@@ -3,7 +3,7 @@ $(function() {
 // Objeto para encapsular las funciones
     var Gps = {};
     (function(app) {
-        var celular = {'estado': false, 'conexion': '', 'plataforma': ''},
+        var celular = {'estado': true, 'conexion': '', 'plataforma': ''}, //estado=false para phonegap
         idColectivo = 1, latitud, longitud, servidor = "http://colectivo.site90.net/", watchID;
         // Función principal autoejecutable
         app.init = function() {
